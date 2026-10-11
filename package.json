@@ -10,7 +10,10 @@
     "check": "turbo run check",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "types:generate": "openapi-typescript contracts/openapi.json -o packages/api-client/src/schema.ts"
+    "contract:validate": "openapi-generator validate -i contracts/openapi.json",
+    "types:generate:react": "openapi-typescript contracts/openapi.json -o packages/api-client/src/schema.ts",
+    "types:generate:rust": "openapi-generator generate -i contracts/openapi.json -g rust -o crates/api-contract --additional-properties=packageName=grow_map_contract,packageVersion=0.1.0,hideGenerationTimestamp=true",
+    "types:generate": "pnpm contract:validate && pnpm types:generate:rust && pnpm types:generate:react"
   },
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
