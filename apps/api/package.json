@@ -1,0 +1,12 @@
+{
+  "name": "@grow-map/api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cargo run -p grow_map_api",
+    "build": "cargo build -p grow_map_api --release",
+    "check": "cargo check -p grow_map_api",
+    "lint": "cargo fmt --all -- --check && cargo clippy -p grow_map_api --all-targets -- -D warnings",
+    "test": "cargo test -p grow_map_api"
+  }
+}

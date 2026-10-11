@@ -1,0 +1,42 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": ["Cargo.toml", "Cargo.lock"],
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"]
+    },
+    "check": {
+      "dependsOn": ["^check"],
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "test": {
+      "outputs": []
+    },
+    "@grow-map/api#dev": {
+      "cache": false,
+      "persistent": true,
+      "interruptible": true
+    },
+    "@grow-map/api#build": {
+      "cache": false
+    },
+    "@grow-map/api#check": {
+      "cache": false
+    },
+    "@grow-map/api#lint": {
+      "cache": false
+    },
+    "@grow-map/api#test": {
+      "cache": false
+    }
+  }
+}

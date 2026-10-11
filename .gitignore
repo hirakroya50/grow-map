@@ -1,0 +1,9 @@
+node_modules/
+.turbo/
+dist/
+target/
+.expo/
+
+.env
+.env.*
+!.env.example
