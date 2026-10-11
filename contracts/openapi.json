@@ -1137,9 +1137,7 @@
             "description": "Case-sensitive canonical base58 Solana public key; must decode to 32 bytes."
           }
         },
-        "required": [
-          "walletAddress"
-        ],
+        "required": ["walletAddress"],
         "additionalProperties": false
       },
       "ChallengeResponse": {
@@ -1157,11 +1155,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "challengeId",
-          "message",
-          "expiresAt"
-        ],
+        "required": ["challengeId", "message", "expiresAt"],
         "additionalProperties": false
       },
       "SessionRequest": {
@@ -1177,10 +1171,7 @@
             "description": "Base64 encoding of 64-byte Ed25519 signature over exact challenge message."
           }
         },
-        "required": [
-          "challengeId",
-          "signature"
-        ],
+        "required": ["challengeId", "signature"],
         "additionalProperties": false
       },
       "RefreshRequest": {
@@ -1192,9 +1183,7 @@
             "maxLength": 512
           }
         },
-        "required": [
-          "refreshToken"
-        ],
+        "required": ["refreshToken"],
         "additionalProperties": false
       },
       "User": {
@@ -1211,22 +1200,14 @@
             "description": "Case-sensitive canonical base58 Solana public key; must decode to 32 bytes."
           },
           "displayName": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           }
         },
-        "required": [
-          "id",
-          "walletAddress",
-          "displayName",
-          "createdAt"
-        ],
+        "required": ["id", "walletAddress", "displayName", "createdAt"],
         "additionalProperties": false
       },
       "SessionResponse": {
@@ -1281,11 +1262,7 @@
             "additionalProperties": true
           }
         },
-        "required": [
-          "code",
-          "message",
-          "requestId"
-        ],
+        "required": ["code", "message", "requestId"],
         "additionalProperties": false
       },
       "Health": {
@@ -1293,15 +1270,13 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "ok",
-              "not_ready"
-            ]
+            "enum": ["ok", "not_ready"]
+          },
+          "service": {
+            "type": "string"
           }
         },
-        "required": [
-          "status"
-        ],
+        "required": ["status", "service"],
         "additionalProperties": false
       },
       "GraphQLRequest": {
@@ -1315,16 +1290,11 @@
             "type": "string"
           },
           "variables": {
-            "type": [
-              "object",
-              "null"
-            ],
+            "type": ["object", "null"],
             "additionalProperties": true
           }
         },
-        "required": [
-          "query"
-        ],
+        "required": ["query"],
         "additionalProperties": false
       },
       "GraphQLError": {
@@ -1345,10 +1315,7 @@
                   "type": "integer"
                 }
               },
-              "required": [
-                "line",
-                "column"
-              ],
+              "required": ["line", "column"],
               "additionalProperties": false
             }
           },
@@ -1383,19 +1350,14 @@
             "additionalProperties": true
           }
         },
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "additionalProperties": false
       },
       "GraphQLResponse": {
         "type": "object",
         "properties": {
           "data": {
-            "type": [
-              "object",
-              "null"
-            ],
+            "type": ["object", "null"],
             "additionalProperties": true
           },
           "errors": {
@@ -1412,14 +1374,10 @@
         },
         "anyOf": [
           {
-            "required": [
-              "data"
-            ]
+            "required": ["data"]
           },
           {
-            "required": [
-              "errors"
-            ]
+            "required": ["errors"]
           }
         ],
         "additionalProperties": false

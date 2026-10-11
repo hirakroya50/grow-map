@@ -236,6 +236,7 @@ export interface components {
         Health: {
             /** @enum {string} */
             status: "ok" | "not_ready";
+            service: string;
         };
         GraphQLRequest: {
             query: string;

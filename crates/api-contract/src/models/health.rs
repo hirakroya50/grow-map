@@ -15,12 +15,15 @@ use serde::{Deserialize, Serialize};
 pub struct Health {
     #[serde(rename = "status")]
     pub status: Status,
+    #[serde(rename = "service")]
+    pub service: String,
 }
 
 impl Health {
-    pub fn new(status: Status) -> Health {
+    pub fn new(status: Status, service: String) -> Health {
         Health {
             status,
+            service,
         }
     }
 }

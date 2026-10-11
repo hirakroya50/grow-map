@@ -52,6 +52,7 @@ function App() {
         {health && (
           <>
             <p>API status: {health.status}</p>
+            <p>Service: {health.service}</p>
             <pre>{JSON.stringify(health, null, 2)}</pre>
           </>
         )}

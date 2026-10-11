@@ -10,7 +10,8 @@ async fn liveness() -> Json<Health> {
     // Deserialize into the generated DTO, including its status enum.
     // This avoids guessing the generator's enum naming.
     let response: Health = serde_json::from_value(serde_json::json!({
-        "status": "ok"
+        "status": "ok",
+        "service": "grow-map-api"
     }))
     .expect("Liveness response must match the generated Health DTO");
 
@@ -66,12 +67,17 @@ mod tests {
 
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
 
-        assert_eq!(json, serde_json::json!({ "status": "ok" }));
+        assert_eq!(
+            json,
+            serde_json::json!({ "status": "ok", "service": "grow-map-api" })
+        );
     }
 
     #[test]
     fn health_dto_rejects_invalid_status() {
-        let result = serde_json::from_value::<Health>(serde_json::json!({ "status": "invalid" }));
+        let result = serde_json::from_value::<Health>(
+            serde_json::json!({ "status": "invalid", "service": "grow-map-api" }),
+        );
 
         assert!(result.is_err());
     }
