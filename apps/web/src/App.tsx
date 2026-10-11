@@ -1,24 +1,37 @@
 import { useState } from "react";
+import createClient from "openapi-fetch";
+import type { Health, paths } from "@grow-map/api-client";
+
+const client = createClient<paths>();
 
 function App() {
-  const [result, setResult] = useState("Not checked yet");
+  const [health, setHealth] = useState<Health | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function checkApi() {
     setLoading(true);
+    setHealth(null);
+    setError(null);
 
     try {
-      const response = await fetch("/api/health");
+      // The path and response type come from generated OpenAPI types.
+      const { data, response } = await client.GET("/health/live");
 
       if (!response.ok) {
         throw new Error(`API returned HTTP ${response.status}`);
       }
 
-      const data: unknown = await response.json();
-      setResult(JSON.stringify(data, null, 2));
-    } catch (error) {
-      setResult(
-        error instanceof Error ? error.message : "Could not reach the API",
+      if (!data) {
+        throw new Error("API returned an empty response");
+      }
+
+      setHealth(data);
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Could not connect to the Rust API",
       );
     } finally {
       setLoading(false);
@@ -27,14 +40,24 @@ function App() {
 
   return (
     <main style={{ padding: 32, fontFamily: "sans-serif" }}>
-      <h1>Grow Map</h1>
-      <p>React + Rust inside Turborepo</p>
+      <h1>Grow Map — API Contract Check</h1>
+
+      <p>React and Rust use DTOs generated from OpenAPI.</p>
 
       <button onClick={checkApi} disabled={loading}>
         {loading ? "Checking..." : "Check Rust API"}
       </button>
 
-      <pre aria-live="polite">{result}</pre>
+      <div aria-live="polite">
+        {health && (
+          <>
+            <p>API status: {health.status}</p>
+            <pre>{JSON.stringify(health, null, 2)}</pre>
+          </>
+        )}
+
+        {error && <p role="alert">{error}</p>}
+      </div>
     </main>
   );
 }
