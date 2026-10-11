@@ -1,0 +1,104 @@
+"""ISO-8601 UTC timestamp."""
+scalar DateTime
+"""Unsigned decimal string in signed int64 range; never a JSON number."""
+scalar Revision
+scalar JSON
+
+enum RoadmapRole { ADMIN MEMBER VIEWER }
+enum RoadmapVisibility { PRIVATE UNLISTED PUBLIC }
+enum NodeStatus { NOT_DONE IN_PROGRESS NEEDS_REVIEW COMPLETE CANCELLED }
+enum EdgeDirection { DIRECTED BIDIRECTIONAL }
+enum AttachmentState { PROCESSING READY REJECTED }
+enum JobState { QUEUED RUNNING SUCCEEDED FAILED }
+enum EventType { ROADMAP_UPDATED NODE_CREATED NODE_UPDATED NODE_DELETED EDGE_CREATED EDGE_UPDATED EDGE_DELETED MEMBERSHIP_CHANGED ATTACHMENT_UPDATED ATTACHMENT_REMOVED VERSION_CREATED GRAPH_RESET ROADMAP_DELETED }
+
+type User { id: ID! walletAddress: String! displayName: String createdAt: DateTime! }
+type Roadmap { id: ID! title: String! description: String visibility: RoadmapVisibility! ownerId: ID! myRole: RoadmapRole revision: Revision! createdAt: DateTime! updatedAt: DateTime! }
+type Position { x: Float! y: Float! }
+type NodeLink { label: String url: String! }
+type Attachment { id: ID! nodeId: ID! filename: String! contentType: String! sizeBytes: Int! state: AttachmentState! createdAt: DateTime! }
+type Node { id: ID! roadmapId: ID! name: String! description: String tags: [String!]! links: [NodeLink!]! attachments: [Attachment!]! status: NodeStatus! position: Position! revision: Revision! createdAt: DateTime! updatedAt: DateTime! }
+type Edge { id: ID! roadmapId: ID! sourceNodeId: ID! targetNodeId: ID! direction: EdgeDirection! label: String revision: Revision! }
+type RoadmapGraph { roadmap: Roadmap! nodes: [Node!]! edges: [Edge!]! sequence: Revision! }
+type RoadmapMember { user: User! role: RoadmapRole! revision: Revision! joinedAt: DateTime! }
+type RoadmapVersion { id: ID! roadmapId: ID! name: String! description: String sourceRevision: Revision! createdAt: DateTime! }
+type PageInfo { endCursor: String hasNextPage: Boolean! }
+type RoadmapConnection { items: [Roadmap!]! pageInfo: PageInfo! }
+type MemberConnection { items: [RoadmapMember!]! pageInfo: PageInfo! }
+type VersionConnection { items: [RoadmapVersion!]! pageInfo: PageInfo! }
+type SignedUrl { url: String! expiresAt: DateTime! }
+type UploadGrant { uploadId: ID! url: String! method: String! headers: [Header!]! expiresAt: DateTime! }
+type Header { name: String! value: String! }
+type ShareLink { id: ID! url: String! expiresAt: DateTime }
+type Invite { id: ID! url: String! role: RoadmapRole! expiresAt: DateTime! }
+type Job { id: ID! roadmapId: ID! state: JobState! kind: String! resultVersionId: ID resultRevision: Revision errorCode: String createdAt: DateTime! updatedAt: DateTime! }
+type RoadmapResult { operationId: ID! sequence: Revision! roadmap: Roadmap! }
+type NodeResult { operationId: ID! sequence: Revision! node: Node! }
+type EdgeResult { operationId: ID! sequence: Revision! edge: Edge! }
+type AttachmentResult { operationId: ID! sequence: Revision! attachment: Attachment! }
+type MemberResult { operationId: ID! sequence: Revision! member: RoadmapMember! }
+type ShareResult { operationId: ID! sequence: Revision! link: ShareLink! }
+type InviteResult { operationId: ID! sequence: Revision! invite: Invite! }
+type DeleteResult { operationId: ID! sequence: Revision! deletedId: ID! }
+type JobAcceptance { operationId: ID! job: Job! }
+type ProfileResult { operationId: ID! user: User! }
+type UploadResult { operationId: ID! grant: UploadGrant! }
+
+type Query {
+ me: User!
+ myRoadmaps(first: Int! = 20, after: String): RoadmapConnection!
+ roadmap(id: ID!): Roadmap!
+ roadmapGraph(roadmapId: ID!): RoadmapGraph!
+ sharedRoadmapGraph(token: String!): RoadmapGraph!
+ roadmapMembers(roadmapId: ID!, first: Int! = 20, after: String): MemberConnection!
+ roadmapVersions(roadmapId: ID!, first: Int! = 20, after: String): VersionConnection!
+ versionGraph(roadmapId: ID!, versionId: ID!): RoadmapGraph!
+ job(id: ID!): Job!
+ attachmentDownloadUrl(roadmapId: ID!, attachmentId: ID!, shareToken: String, versionId: ID): SignedUrl!
+}
+input PositionInput { x: Float! y: Float! }
+input LinkInput { label: String url: String! }
+input CreateRoadmapInput { operationId: ID! title: String! description: String visibility: RoadmapVisibility! = PRIVATE }
+input UpdateRoadmapInput { operationId: ID! roadmapId: ID! expectedRevision: Revision! title: String description: String visibility: RoadmapVisibility }
+input CreateNodeInput { operationId: ID! roadmapId: ID! name: String! description: String tags: [String!] links: [LinkInput!] status: NodeStatus! = NOT_DONE position: PositionInput! }
+input UpdateNodeInput { operationId: ID! roadmapId: ID! nodeId: ID! expectedRevision: Revision! name: String description: String tags: [String!] links: [LinkInput!] status: NodeStatus position: PositionInput }
+input CreateEdgeInput { operationId: ID! roadmapId: ID! sourceNodeId: ID! targetNodeId: ID! direction: EdgeDirection! = DIRECTED label: String }
+input UpdateEdgeInput { operationId: ID! roadmapId: ID! edgeId: ID! expectedRevision: Revision! direction: EdgeDirection label: String }
+input DeleteEntityInput { operationId: ID! roadmapId: ID! entityId: ID! expectedRevision: Revision! }
+input CreateInviteInput { operationId: ID! roadmapId: ID! role: RoadmapRole! targetWalletAddress: String expiresAt: DateTime! }
+input SetMemberRoleInput { operationId: ID! roadmapId: ID! userId: ID! expectedRevision: Revision! role: RoadmapRole! }
+input VersionInput { operationId: ID! roadmapId: ID! expectedRevision: Revision! name: String! description: String }
+input RestoreInput { operationId: ID! roadmapId: ID! versionId: ID! expectedRevision: Revision! }
+input UploadInput { operationId: ID! roadmapId: ID! nodeId: ID! filename: String! contentType: String! sizeBytes: Int! checksumSha256: String! }
+
+type Mutation {
+ updateProfile(operationId: ID!, displayName: String): ProfileResult!
+ createRoadmap(input: CreateRoadmapInput!): RoadmapResult!
+ updateRoadmap(input: UpdateRoadmapInput!): RoadmapResult!
+ deleteRoadmap(operationId: ID!, roadmapId: ID!, expectedRevision: Revision!): DeleteResult!
+ createNode(input: CreateNodeInput!): NodeResult!
+ updateNode(input: UpdateNodeInput!): NodeResult!
+ deleteNode(input: DeleteEntityInput!): DeleteResult!
+ createEdge(input: CreateEdgeInput!): EdgeResult!
+ updateEdge(input: UpdateEdgeInput!): EdgeResult!
+ deleteEdge(input: DeleteEntityInput!): DeleteResult!
+ createShareLink(operationId: ID!, roadmapId: ID!, expiresAt: DateTime): ShareResult!
+ revokeShareLink(operationId: ID!, roadmapId: ID!, shareLinkId: ID!): DeleteResult!
+ createInvite(input: CreateInviteInput!): InviteResult!
+ revokeInvite(operationId: ID!, roadmapId: ID!, inviteId: ID!): DeleteResult!
+ acceptInvite(operationId: ID!, token: String!): MemberResult!
+ setMemberRole(input: SetMemberRoleInput!): MemberResult!
+ removeMember(operationId: ID!, roadmapId: ID!, userId: ID!, expectedRevision: Revision!): DeleteResult!
+ leaveRoadmap(operationId: ID!, roadmapId: ID!): DeleteResult!
+ transferOwnership(operationId: ID!, roadmapId: ID!, newOwnerId: ID!, expectedRevision: Revision!): RoadmapResult!
+ createVersion(input: VersionInput!): JobAcceptance!
+ restoreVersion(input: RestoreInput!): JobAcceptance!
+ requestAttachmentUpload(input: UploadInput!): UploadResult!
+ completeAttachmentUpload(operationId: ID!, uploadId: ID!): AttachmentResult!
+ removeAttachment(operationId: ID!, roadmapId: ID!, attachmentId: ID!): DeleteResult!
+}
+
+"""Only set the applicable optional fields. Deletes include all affected IDs; reset requires snapshot reload."""
+type EventPayload { node: Node edge: Edge attachment: Attachment deletedNodeIds: [ID!] deletedEdgeIds: [ID!] deletedAttachmentIds: [ID!] roadmap: Roadmap versionId: ID userId: ID }
+type RoadmapEvent { roadmapId: ID! sequence: Revision! operationId: ID! actorId: ID! type: EventType! entityId: ID payload: EventPayload! occurredAt: DateTime! }
+type Subscription { roadmapChanges(roadmapId: ID!, afterSequence: Revision!): RoadmapEvent! }
