@@ -18,11 +18,58 @@ import method for rust : export type { components, paths } from "./schema";
 import method for react : import type { components, paths } from "@grow-map/api-client";
 
 
+Check only Rust compilation:
+    cargo check -p grow_map_api
+
+Format application Rust code:
+    cargo fmt -p grow_map_api
+
+Check linting:
+    pnpm lint
+
+Run Rust tests:
+    cargo test -p grow_map_api
+
+Run all configured test tasks:
+    pnpm test
+
+Build React and Rust for production:
+    pnpm build
+
+Start React + Rust with automatic Rust restarts:
+    pnpm dev:watch
+
+Start React + Rust without automatic Rust restarts:
+    pnpm dev
+
+Start only React:
+    pnpm dev:web
+
+Start only Rust:
+    pnpm dev:api
 
 
 
 
+-----------------------AFTER CHANGING OPENAPI---------------------------
 
+1. Edit:
+    contracts/openapi.json
+
+2. Generate:
+    pnpm types:generate
+
+3. Update affected Rust handlers, React code, and tests.
+
+4. Verify:
+    cargo fmt -p grow_map_api
+    cargo test -p grow_map_api
+    pnpm check
+    pnpm lint
+    pnpm build
+
+5. Start:
+    pnpm dev:watch
 
 
 
