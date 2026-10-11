@@ -1,9 +1,16 @@
 use axum::{Json, Router, routing::get};
 use grow_map_contract::models::Health;
 use tokio::net::TcpListener;
+use utoipa_swagger_ui::SwaggerUi;
 
 fn app() -> Router {
-    Router::new().route("/health/live", get(liveness))
+    let contract: serde_json::Value =
+        serde_json::from_str(include_str!("../../../contracts/openapi.json"))
+            .expect("contracts/openapi.json must contain valid JSON");
+
+    Router::new()
+        .route("/health/live", get(liveness))
+        .merge(SwaggerUi::new("/docs").external_url_unchecked("/openapi.json", contract))
 }
 
 async fn liveness() -> Json<Health> {

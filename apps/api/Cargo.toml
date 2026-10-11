@@ -16,6 +16,9 @@ tokio = { version = "1", features = [
 ] }
 
 grow_map_contract = { path = "../../crates/api-contract" }
+utoipa-swagger-ui = { version = "10", features = ["axum", "vendored"] }
 
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }
+
+utoipa-swagger-ui = { version = "10", features = ["axum", "vendored"] }
